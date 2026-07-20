@@ -93,6 +93,16 @@
   }
   .sf-file-name{ margin:8px 0 0; font-size:13px; color:var(--ink); font-weight:600; }
 
+  .sf-file-list{ list-style:none; margin:10px 0 0; padding:0; display:flex; flex-direction:column; gap:6px; }
+  .sf-file-list li{
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-size:13px;
+  }
+  .sf-file-list .sf-file-remove{
+    background:none; border:none; color:var(--brick); cursor:pointer; font-size:13px; font-weight:600;
+    padding:0; font-family:'Inter',sans-serif;
+  }
+
   .sf-submit{
     width:100%; background:var(--ink); color:#fff; border:none; border-radius:9px;
     padding:14px; font-size:15px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;
@@ -220,13 +230,13 @@
           </div>
 
           <div class="sf-field">
-            <label class="sf-label">Supporting document (optional)</label>
+            <label class="sf-label">Supporting documents (optional)</label>
             <div class="sf-dropzone" id="sf-dropzone">
-              <p>Drag a file here, or <button type="button" id="sf-browse">browse</button></p>
-              <p class="sf-help">PDF, JPG, or PNG. Up to 3MB — a photo of a bill, ID, or letter works fine.</p>
-              <p class="sf-file-name" id="sf-file-name"></p>
+              <p>Drag files here, or <button type="button" id="sf-browse">browse</button></p>
+              <p class="sf-help">PDF, JPG, or PNG. Up to 3MB each — bills, IDs, or letters all work. You can attach more than one.</p>
             </div>
-            <input type="file" id="sf-file-input" hidden accept=".pdf,.png,.jpg,.jpeg">
+            <ul class="sf-file-list" id="sf-file-list"></ul>
+            <input type="file" id="sf-file-input" hidden accept=".pdf,.png,.jpg,.jpeg" multiple>
           </div>
 
           <p class="sf-error" id="sf-error" hidden></p>
@@ -295,38 +305,58 @@
   const successEl = $('sf-success');
   const dropzone = $('sf-dropzone');
   const fileInput = $('sf-file-input');
-  const fileNameEl = $('sf-file-name');
+  const fileListEl = $('sf-file-list');
 
-  let selectedFile = null; // { name, type, dataUrl }
+  let selectedFiles = []; // [{ name, type, dataUrl }]
   const MAX_BYTES = 3 * 1024 * 1024;
+  const MAX_FILES = 8;
 
   function showError(msg){ errorEl.textContent = msg; errorEl.hidden = false; }
   function clearError(){ errorEl.hidden = true; errorEl.textContent = ''; }
 
   // --- File handling ---
   $('sf-browse').addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+  fileInput.addEventListener('change', (e) => { handleFiles(e.target.files); fileInput.value = ''; });
   dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('sf-drag'); });
   dropzone.addEventListener('dragleave', () => dropzone.classList.remove('sf-drag'));
   dropzone.addEventListener('drop', (e) => {
     e.preventDefault(); dropzone.classList.remove('sf-drag');
-    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+    if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files);
   });
 
-  function handleFile(file){
-    if (!file) return;
+  function handleFiles(fileList){
     clearError();
-    if (file.size > MAX_BYTES){
-      showError('That file is too large. Please keep it under 3MB.');
+    const incoming = Array.from(fileList);
+    if (selectedFiles.length + incoming.length > MAX_FILES){
+      showError('Please attach no more than ' + MAX_FILES + ' files.');
       return;
     }
-    const reader = new FileReader();
-    reader.onload = () => {
-      selectedFile = { name: file.name, type: file.type, dataUrl: reader.result };
-      fileNameEl.textContent = "Attached: " + file.name;
-    };
-    reader.onerror = () => showError('Could not read that file — please try another.');
-    reader.readAsDataURL(file);
+    incoming.forEach((file) => {
+      if (file.size > MAX_BYTES){
+        showError('"' + file.name + '" is too large. Please keep each file under 3MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        selectedFiles.push({ name: file.name, type: file.type, dataUrl: reader.result });
+        renderFileList();
+      };
+      reader.onerror = () => showError('Could not read "' + file.name + '" — please try another file.');
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function renderFileList(){
+    fileListEl.innerHTML = '';
+    selectedFiles.forEach((f, i) => {
+      const li = document.createElement('li');
+      li.innerHTML = `<span>${escapeHtml(f.name)}</span><button type="button" class="sf-file-remove" data-i="${i}">Remove</button>`;
+      li.querySelector('.sf-file-remove').addEventListener('click', () => {
+        selectedFiles.splice(i, 1);
+        renderFileList();
+      });
+      fileListEl.appendChild(li);
+    });
   }
 
   // --- Submit ---
@@ -341,7 +371,7 @@
       idNumber: $('sf-id').value.trim(),
       category: category.value,
       statement: $('sf-statement').value.trim(),
-      file: selectedFile,
+      files: selectedFiles,
       submittedAt: new Date().toISOString()
     };
 
@@ -387,8 +417,8 @@
       form.reset();
       form.hidden = false;
       successEl.hidden = true;
-      selectedFile = null;
-      fileNameEl.textContent = '';
+      selectedFiles = [];
+      fileListEl.innerHTML = '';
       submitBtn.disabled = false;
       submitBtn.textContent = 'Submit application';
       showView('apply');
@@ -460,7 +490,7 @@
         <div class="sf-entry-body" hidden>
           <p>${escapeHtml(entry.statement || '')}</p>
           <div class="sf-entry-actions">
-            ${entry.fileUrl ? `<a href="${entry.fileUrl}" target="_blank" rel="noopener">Open proof document</a>` : ''}
+            ${entry.folderUrl ? `<a href="${entry.folderUrl}" target="_blank" rel="noopener">Open documents folder</a>` : ''}
             <button class="sf-delete" data-ref="${entry.ref}">Delete</button>
           </div>
         </div>
