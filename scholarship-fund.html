@@ -1,0 +1,494 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+
+  :root{
+    --paper:#ECE7D8;
+    --card:#F8F5EC;
+    --ink:#23324A;
+    --ink-soft:#5B6478;
+    --gold:#B07D2B;
+    --gold-soft:#DDBE84;
+    --teal:#3E6B63;
+    --teal-soft:#B9D0C9;
+    --brick:#9C4A3E;
+    --brick-soft:#E2BDB6;
+    --line:#C9C1A6;
+    --radius:14px;
+  }
+
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;} }
+
+  .sf-root{
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    min-height:100%;
+    padding:0 0 40px 0;
+  }
+  .sf-wrap{ max-width:760px; margin:0 auto; padding:0 24px; }
+
+  .sf-hero{ padding:48px 24px 12px; text-align:center; }
+  .sf-eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--ink-soft); margin:0 0 14px;
+  }
+  .sf-title{
+    font-family:'Fraunces',serif; font-weight:600; font-optical-sizing:auto;
+    font-size:clamp(30px,5vw,48px); line-height:1.08; margin:0 0 14px; letter-spacing:-0.01em;
+  }
+  .sf-sub{ font-size:16px; color:var(--ink-soft); max-width:520px; margin:0 auto; line-height:1.55; }
+
+  .sf-bridge{ width:100%; max-width:760px; height:auto; margin:28px auto 4px; display:block; }
+  .sf-arch{
+    fill:none; stroke:var(--ink); stroke-width:4; stroke-linecap:round;
+    stroke-dasharray:1100; stroke-dashoffset:1100;
+    animation:sf-draw 1.4s ease-out .2s forwards;
+  }
+  @keyframes sf-draw{ to{ stroke-dashoffset:0; } }
+  .sf-ground{ stroke:var(--ink); stroke-width:3; stroke-linecap:round; opacity:.85; }
+  .sf-water{ stroke:var(--ink-soft); stroke-width:1.5; fill:none; opacity:.35; }
+  .sf-marker-label{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.04em; fill:var(--ink-soft); }
+  .sf-endlabel{ font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em; fill:var(--ink-soft); text-transform:uppercase; }
+
+  main{ margin-top:12px; }
+  .sf-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    padding:32px; margin:0 0 24px;
+  }
+  .sf-card h2{ font-family:'Fraunces',serif; font-weight:600; font-size:24px; margin:0 0 6px; }
+  .sf-card .sf-card-sub{ color:var(--ink-soft); font-size:14px; margin:0 0 26px; }
+
+  label.sf-label{ display:block; font-size:13px; font-weight:600; margin:0 0 6px; }
+  .sf-help{ font-size:12.5px; color:var(--ink-soft); margin:4px 0 0; line-height:1.4; }
+  .sf-field{ margin-bottom:22px; }
+
+  input[type="text"], textarea{
+    width:100%; font-family:'Inter',sans-serif; font-size:15px; color:var(--ink);
+    background:#fff; border:1px solid var(--line); border-radius:9px; padding:11px 13px;
+  }
+  input[type="text"]:focus-visible, textarea:focus-visible{ outline:2px solid var(--gold); outline-offset:1px; }
+  textarea{ resize:vertical; min-height:110px; line-height:1.5; }
+
+  .sf-cat-group{ display:flex; flex-wrap:wrap; gap:10px; }
+  .sf-cat-input{ position:absolute; opacity:0; width:1px; height:1px; }
+  .sf-cat-pill{
+    cursor:pointer; padding:10px 16px; border-radius:999px; border:1.5px solid var(--line);
+    font-size:14px; font-weight:600; background:#fff; color:var(--ink-soft); user-select:none;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .sf-cat-input:focus-visible + .sf-cat-pill{ outline:2px solid var(--ink); outline-offset:2px; }
+  #cat-school:checked + .sf-cat-pill{ background:var(--teal); border-color:var(--teal); color:#fff; }
+  #cat-medical:checked + .sf-cat-pill{ background:var(--brick); border-color:var(--brick); color:#fff; }
+  #cat-extreme:checked + .sf-cat-pill{ background:var(--gold); border-color:var(--gold); color:#fff; }
+
+  .sf-dropzone{
+    border:1.5px dashed var(--line); border-radius:9px; padding:20px; text-align:center;
+    background:#fff; font-size:14px; color:var(--ink-soft); transition:border-color .15s,background .15s;
+  }
+  .sf-dropzone.sf-drag{ border-color:var(--gold); background:#FBF3E4; }
+  .sf-dropzone button{
+    background:none; border:none; color:var(--gold); font-weight:600; font-size:14px;
+    text-decoration:underline; cursor:pointer; padding:0; font-family:inherit;
+  }
+  .sf-file-name{ margin:8px 0 0; font-size:13px; color:var(--ink); font-weight:600; }
+
+  .sf-submit{
+    width:100%; background:var(--ink); color:#fff; border:none; border-radius:9px;
+    padding:14px; font-size:15px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;
+    transition:background .15s;
+  }
+  .sf-submit:hover{ background:#1a2537; }
+  .sf-submit:disabled{ background:var(--ink-soft); cursor:not-allowed; }
+  .sf-submit:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+
+  .sf-error{ color:var(--brick); font-size:13px; margin-top:10px; font-weight:600; }
+  .sf-success{ text-align:center; padding:10px 0; }
+  .sf-success .sf-ref{
+    display:inline-block; margin-top:10px; font-family:'IBM Plex Mono',monospace;
+    background:#fff; border:1px solid var(--line); border-radius:8px; padding:8px 14px; font-size:14px;
+  }
+
+  .sf-back-btn{
+    background:none; border:none; font-family:'IBM Plex Mono',monospace; font-size:12.5px;
+    letter-spacing:.03em; color:var(--ink-soft); cursor:pointer; padding:0; margin-bottom:20px;
+    display:inline-block;
+  }
+  .sf-back-btn:hover{ color:var(--ink); }
+  .sf-link-btn{
+    background:none; border:none; font-family:'IBM Plex Mono',monospace; font-size:12.5px;
+    letter-spacing:.04em; color:var(--ink-soft); text-decoration:underline; cursor:pointer; padding:0;
+  }
+  .sf-footer{ text-align:center; margin-top:8px; }
+  .sf-fine{ font-size:12px; color:var(--ink-soft); max-width:480px; margin:14px auto 0; line-height:1.5; }
+
+  .sf-gate-row{ display:flex; gap:10px; }
+  .sf-gate-row input{ flex:1; }
+  .sf-gate-row button{
+    background:var(--ink); color:#fff; border:none; border-radius:9px; padding:0 20px; font-weight:600; cursor:pointer;
+  }
+
+  .sf-admin-top{ display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+  .sf-filters{ display:flex; gap:8px; flex-wrap:wrap; }
+  .sf-filter{
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.03em; text-transform:uppercase;
+    border:1px solid var(--line); background:#fff; border-radius:999px; padding:6px 12px; cursor:pointer; color:var(--ink-soft);
+  }
+  .sf-filter.sf-active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+
+  .sf-entry{ border:1px solid var(--line); border-radius:10px; padding:16px 18px; margin-bottom:12px; background:#fff; }
+  .sf-entry-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; cursor:pointer; }
+  .sf-entry-name{ font-weight:600; font-size:15px; }
+  .sf-entry-meta{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
+  .sf-tag{
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.04em; text-transform:uppercase;
+    padding:3px 9px; border-radius:999px; color:#fff; white-space:nowrap;
+  }
+  .sf-tag-school{ background:var(--teal); }
+  .sf-tag-medical{ background:var(--brick); }
+  .sf-tag-extreme{ background:var(--gold); }
+
+  .sf-entry-body{ margin-top:14px; padding-top:14px; border-top:1px solid var(--line); font-size:14px; line-height:1.55; }
+  .sf-entry-body p{ margin:0 0 10px; }
+  .sf-entry-actions{ display:flex; gap:14px; margin-top:10px; }
+  .sf-entry-actions a, .sf-entry-actions button{
+    font-size:13px; font-weight:600; color:var(--ink); background:none; border:none; cursor:pointer;
+    text-decoration:underline; padding:0; font-family:'Inter',sans-serif;
+  }
+  .sf-entry-actions .sf-delete{ color:var(--brick); }
+  .sf-empty{ text-align:center; color:var(--ink-soft); font-size:14px; padding:20px 0; }
+</style>
+
+<div class="sf-root">
+  <div class="sf-wrap">
+
+    <header class="sf-hero">
+      <p class="sf-eyebrow">A Community Assistance Fund</p>
+      <h1 class="sf-title">A path forward,<br>when you need one.</h1>
+      <p class="sf-sub">We give small grants for school costs, medical need, and situations of extreme hardship. Tell us what's going on — it takes a few minutes.</p>
+
+      <svg class="sf-bridge" viewBox="0 0 1000 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Illustration of a bridge with three paths: School, Extreme Need, and Medical">
+        <line class="sf-ground" x1="0" y1="260" x2="150" y2="260"/>
+        <line class="sf-ground" x1="850" y1="260" x2="1000" y2="260"/>
+        <line class="sf-ground" x1="150" y1="240" x2="150" y2="260"/>
+        <line class="sf-ground" x1="850" y1="240" x2="850" y2="260"/>
+        <path class="sf-water" d="M170,257 q20,-8 40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0 t40,0"/>
+        <path class="sf-arch" d="M150,240 Q500,60 850,240"/>
+        <circle cx="325" cy="172.5" r="6" fill="var(--teal)"/>
+        <text class="sf-marker-label" x="325" y="196" text-anchor="middle">SCHOOL</text>
+        <circle cx="500" cy="150" r="6" fill="var(--gold)"/>
+        <text class="sf-marker-label" x="500" y="132" text-anchor="middle">EXTREME NEED</text>
+        <circle cx="675" cy="172.5" r="6" fill="var(--brick)"/>
+        <text class="sf-marker-label" x="675" y="196" text-anchor="middle">MEDICAL</text>
+        <text class="sf-endlabel" x="75" y="280" text-anchor="middle">Today</text>
+        <text class="sf-endlabel" x="925" y="280" text-anchor="middle">Tomorrow</text>
+      </svg>
+    </header>
+
+    <main>
+      <section id="sf-apply-view" class="sf-card">
+        <h2>Apply</h2>
+        <p class="sf-card-sub">Every field marked required is needed to review your request.</p>
+
+        <form id="sf-form">
+          <div class="sf-field">
+            <label class="sf-label" for="sf-name">Full name *</label>
+            <input type="text" id="sf-name" required autocomplete="name">
+          </div>
+
+          <div class="sf-field">
+            <label class="sf-label" for="sf-id">ID number *</label>
+            <input type="text" id="sf-id" required>
+            <p class="sf-help">Student ID, patient or medical record number, or a government ID — whichever fits your situation.</p>
+          </div>
+
+          <div class="sf-field">
+            <label class="sf-label">Category *</label>
+            <div class="sf-cat-group" role="radiogroup" aria-label="Category">
+              <input class="sf-cat-input" type="radio" name="category" id="cat-school" value="School" required>
+              <label class="sf-cat-pill" for="cat-school">School</label>
+              <input class="sf-cat-input" type="radio" name="category" id="cat-medical" value="Medical">
+              <label class="sf-cat-pill" for="cat-medical">Medical</label>
+              <input class="sf-cat-input" type="radio" name="category" id="cat-extreme" value="Extreme Need">
+              <label class="sf-cat-pill" for="cat-extreme">Extreme Need</label>
+            </div>
+          </div>
+
+          <div class="sf-field">
+            <label class="sf-label" for="sf-statement">Tell us what's happening *</label>
+            <textarea id="sf-statement" required placeholder="What do you need help with, and what would this grant cover?"></textarea>
+          </div>
+
+          <div class="sf-field">
+            <label class="sf-label">Supporting document (optional)</label>
+            <div class="sf-dropzone" id="sf-dropzone">
+              <p>Drag a file here, or <button type="button" id="sf-browse">browse</button></p>
+              <p class="sf-help">PDF, JPG, or PNG. Up to 3MB — a photo of a bill, ID, or letter works fine.</p>
+              <p class="sf-file-name" id="sf-file-name"></p>
+            </div>
+            <input type="file" id="sf-file-input" hidden accept=".pdf,.png,.jpg,.jpeg">
+          </div>
+
+          <p class="sf-error" id="sf-error" hidden></p>
+          <button type="submit" class="sf-submit" id="sf-submit-btn">Submit application</button>
+        </form>
+
+        <div class="sf-success" id="sf-success" hidden>
+          <button type="button" class="sf-back-btn" data-back-reset>← Back to home</button>
+          <h2>Received.</h2>
+          <p>Your application has been submitted for review.</p>
+          <div class="sf-ref" id="sf-ref"></div>
+          <p class="sf-help" style="margin-top:14px;">Keep this reference code if you follow up about your application.</p>
+        </div>
+      </section>
+
+      <section id="sf-gate-view" class="sf-card" hidden>
+        <button type="button" class="sf-back-btn" data-back>← Back to home</button>
+        <h2>Review submissions</h2>
+        <p class="sf-card-sub">Enter the access code to view applications.</p>
+        <div class="sf-gate-row">
+          <input type="text" id="sf-gate-code" placeholder="Access code">
+          <button type="button" id="sf-gate-submit">Unlock</button>
+        </div>
+        <p class="sf-error" id="sf-gate-error" hidden>That code isn't right.</p>
+      </section>
+
+      <section id="sf-admin-view" class="sf-card" hidden>
+        <button type="button" class="sf-back-btn" data-back>← Back to home</button>
+        <div class="sf-admin-top">
+          <h2 style="margin:0;">Submissions</h2>
+          <div class="sf-filters" id="sf-filters">
+            <button class="sf-filter sf-active" data-filter="All">All</button>
+            <button class="sf-filter" data-filter="School">School</button>
+            <button class="sf-filter" data-filter="Medical">Medical</button>
+            <button class="sf-filter" data-filter="Extreme Need">Extreme Need</button>
+          </div>
+        </div>
+        <div id="sf-entries"></div>
+      </section>
+    </main>
+
+    <footer class="sf-footer">
+      <button class="sf-link-btn" id="sf-review-link">Review submissions →</button>
+      <p class="sf-fine">Applications are saved to a Google Sheet so reviewers can read them later. Access to the sheet and its uploaded files depends on how you've shared them in Google — review those sharing settings if applicants are sending sensitive documents.</p>
+    </footer>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  // Change this to set your own access code for the review view.
+  const ADMIN_CODE = "scholarship2026";
+
+  // Paste the Web App URL from your Google Apps Script deployment here.
+  // See the setup instructions provided alongside this file.
+  const SHEET_API_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+
+  const $ = (id) => document.getElementById(id);
+  const applyView = $('sf-apply-view');
+  const gateView = $('sf-gate-view');
+  const adminView = $('sf-admin-view');
+  const form = $('sf-form');
+  const errorEl = $('sf-error');
+  const submitBtn = $('sf-submit-btn');
+  const successEl = $('sf-success');
+  const dropzone = $('sf-dropzone');
+  const fileInput = $('sf-file-input');
+  const fileNameEl = $('sf-file-name');
+
+  let selectedFile = null; // { name, type, dataUrl }
+  const MAX_BYTES = 3 * 1024 * 1024;
+
+  function showError(msg){ errorEl.textContent = msg; errorEl.hidden = false; }
+  function clearError(){ errorEl.hidden = true; errorEl.textContent = ''; }
+
+  // --- File handling ---
+  $('sf-browse').addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+  dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('sf-drag'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('sf-drag'));
+  dropzone.addEventListener('drop', (e) => {
+    e.preventDefault(); dropzone.classList.remove('sf-drag');
+    if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+  });
+
+  function handleFile(file){
+    if (!file) return;
+    clearError();
+    if (file.size > MAX_BYTES){
+      showError('That file is too large. Please keep it under 3MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      selectedFile = { name: file.name, type: file.type, dataUrl: reader.result };
+      fileNameEl.textContent = "Attached: " + file.name;
+    };
+    reader.onerror = () => showError('Could not read that file — please try another.');
+    reader.readAsDataURL(file);
+  }
+
+  // --- Submit ---
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+    const category = form.querySelector('input[name="category"]:checked');
+    if (!category){ showError('Please choose a category.'); return; }
+
+    const entry = {
+      name: $('sf-name').value.trim(),
+      idNumber: $('sf-id').value.trim(),
+      category: category.value,
+      statement: $('sf-statement').value.trim(),
+      file: selectedFile,
+      submittedAt: new Date().toISOString()
+    };
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+
+    const ref = 'SF-' + Date.now().toString(36).toUpperCase();
+
+    try{
+      const res = await fetch(SHEET_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // avoids CORS preflight against Apps Script
+        body: JSON.stringify({ action: 'create', ...entry, ref })
+      });
+      const result = await res.json();
+      if (!result || result.status !== 'ok'){ throw new Error('save failed'); }
+      form.hidden = true;
+      successEl.hidden = false;
+      $('sf-ref').textContent = ref;
+    } catch(err){
+      showError("Something went wrong submitting your application. Please try again.");
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit application';
+    }
+  });
+
+  // --- View switching ---
+  function showView(view){
+    applyView.hidden = view !== 'apply';
+    gateView.hidden = view !== 'gate';
+    adminView.hidden = view !== 'admin';
+  }
+
+  $('sf-review-link').addEventListener('click', () => showView('gate'));
+
+  document.querySelectorAll('[data-back]').forEach(btn => {
+    btn.addEventListener('click', () => showView('apply'));
+  });
+
+  const resetBackBtn = document.querySelector('[data-back-reset]');
+  if (resetBackBtn){
+    resetBackBtn.addEventListener('click', () => {
+      form.reset();
+      form.hidden = false;
+      successEl.hidden = true;
+      selectedFile = null;
+      fileNameEl.textContent = '';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit application';
+      showView('apply');
+    });
+  }
+
+  $('sf-gate-submit').addEventListener('click', () => {
+    const code = $('sf-gate-code').value;
+    if (code === ADMIN_CODE){
+      $('sf-gate-error').hidden = true;
+      showView('admin');
+      loadEntries('All');
+    } else {
+      $('sf-gate-error').hidden = false;
+    }
+  });
+
+  // --- Admin list ---
+  let allEntries = [];
+  let activeFilter = 'All';
+
+  document.getElementById('sf-filters').addEventListener('click', (e) => {
+    const btn = e.target.closest('.sf-filter');
+    if (!btn) return;
+    activeFilter = btn.dataset.filter;
+    [...document.querySelectorAll('.sf-filter')].forEach(b => b.classList.toggle('sf-active', b === btn));
+    renderEntries();
+  });
+
+  async function loadEntries(){
+    const entriesEl = $('sf-entries');
+    entriesEl.innerHTML = '<p class="sf-empty">Loading…</p>';
+    try{
+      const res = await fetch(SHEET_API_URL, { method: 'GET' });
+      const data = await res.json();
+      allEntries = (data.entries || []).sort((a,b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+      renderEntries();
+    } catch(err){
+      entriesEl.innerHTML = '<p class="sf-empty">Could not load submissions. Please try again.</p>';
+    }
+  }
+
+  function tagClass(cat){
+    if (cat === 'School') return 'sf-tag-school';
+    if (cat === 'Medical') return 'sf-tag-medical';
+    return 'sf-tag-extreme';
+  }
+
+  function renderEntries(){
+    const entriesEl = $('sf-entries');
+    const filtered = activeFilter === 'All' ? allEntries : allEntries.filter(e => e.category === activeFilter);
+    if (filtered.length === 0){
+      entriesEl.innerHTML = '<p class="sf-empty">No submissions yet.</p>';
+      return;
+    }
+    entriesEl.innerHTML = '';
+    filtered.forEach((entry) => {
+      const div = document.createElement('div');
+      div.className = 'sf-entry';
+      const date = new Date(entry.submittedAt).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+      div.innerHTML = `
+        <div class="sf-entry-top">
+          <div>
+            <div class="sf-entry-name">${escapeHtml(entry.name || '(no name)')}</div>
+            <div class="sf-entry-meta">ID ${escapeHtml(entry.idNumber || '—')} · ${date} · ${escapeHtml(entry.ref || '')}</div>
+          </div>
+          <span class="sf-tag ${tagClass(entry.category)}">${escapeHtml(entry.category || '')}</span>
+        </div>
+        <div class="sf-entry-body" hidden>
+          <p>${escapeHtml(entry.statement || '')}</p>
+          <div class="sf-entry-actions">
+            ${entry.fileUrl ? `<a href="${entry.fileUrl}" target="_blank" rel="noopener">Open proof document</a>` : ''}
+            <button class="sf-delete" data-ref="${entry.ref}">Delete</button>
+          </div>
+        </div>
+      `;
+      const top = div.querySelector('.sf-entry-top');
+      const body = div.querySelector('.sf-entry-body');
+      top.addEventListener('click', () => { body.hidden = !body.hidden; });
+      div.querySelector('.sf-delete').addEventListener('click', async (e) => {
+        e.stopPropagation();
+        if (!confirm('Delete this application? This cannot be undone.')) return;
+        try{
+          await fetch(SHEET_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'delete', ref: entry.ref })
+          });
+          allEntries = allEntries.filter(x => x.ref !== entry.ref);
+          renderEntries();
+        } catch(err){ alert('Could not delete — please try again.'); }
+      });
+      entriesEl.appendChild(div);
+    });
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+})();
+</script>
